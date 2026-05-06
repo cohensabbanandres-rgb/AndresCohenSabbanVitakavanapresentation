@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitaKavana — Strategic Proposal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6fa;
+    --ink: #0a1f3d;
+    --navy: #112a4d;
+    --navy-deep: #07172e;
+    --sky: #4a7bb8;
+    --sky-light: #7fa4d4;
+    --sky-pale: #c8d8ec;
+    --muted: #5a6a82;
+    --rule: #d1dae8;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--navy-deep);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .deck {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    overflow: hidden;
+  }
+
+  .slide.active { display: flex; }
+
+  /* Light slide */
+  .slide.light {
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  /* Dark slide */
+  .slide.dark {
+    background: var(--navy-deep);
+    color: var(--white);
+  }
+
+  .slide.dark::before {
+    content: '';
+    position: absolute;
+    top: -250px; right: -250px;
+    width: 700px; height: 700px;
+    border: 1px solid rgba(127,164,212,0.12);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .slide.dark::after {
+    content: '';
+    position: absolute;
+    bottom: -350px; left: -150px;
+    width: 800px; height: 800px;
+    border: 1px solid rgba(127,164,212,0.06);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* Slide layout */
+  .slide-inner {
+    width: 100%;
+    height: 100%;
+    padding: 6vh 8vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--sky);
+    margin-bottom: 28px;
+  }
+
+  .slide.dark .eyebrow { color: var(--sky-light); }
+
+  h1 {
+    font-size: clamp(48px, 6vw, 88px);
+    font-weight: 300;
+    line-height: 1.0;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+  }
+
+  h1 em { font-style: italic; color: var(--sky-light); }
+  .light h1 em { color: var(--sky); }
+
+  h2 {
+    font-size: clamp(36px, 4.5vw, 56px);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.005em;
+    margin-bottom: 24px;
+    color: var(--navy);
+  }
+
+  .dark h2 { color: var(--white); }
+  h2 em { font-style: italic; color: var(--sky); }
+  .dark h2 em { color: var(--sky-light); }
+
+  .lead {
+    font-size: clamp(18px, 1.5vw, 22px);
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--muted);
+    max-width: 800px;
+  }
+
+  .dark .lead { color: rgba(255,255,255,0.65); }
+  .lead strong { color: var(--ink); font-weight: 600; }
+  .dark .lead strong { color: var(--white); }
+  .lead em { color: var(--navy); font-style: italic; }
+  .dark .lead em { color: var(--sky-light); }
+
+  /* Slide footer (page indicator) */
+  .slide-footer {
+    position: absolute;
+    bottom: 4vh;
+    left: 8vw;
+    right: 8vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--sky);
+    text-transform: uppercase;
+    z-index: 3;
+  }
+
+  .dark .slide-footer { color: rgba(127,164,212,0.6); }
+
+  /* HERO SLIDE */
+  .hero-content h1 {
+    color: var(--white);
+  }
+
+  .hero-content .lead {
+    margin-top: 32px;
+    max-width: 660px;
+  }
+
+  /* Two-column layout for moves slides */
+  .moves-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+    margin-top: 36px;
+  }
+
+  .move {
+    border-left: 2px solid var(--sky);
+    padding: 4px 0 4px 22px;
+  }
+
+  .move .num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--sky);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .move h3 {
+    font-size: clamp(20px, 1.6vw, 26px);
+    font-weight: 400;
+    color: var(--navy);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .move p {
+    font-size: clamp(13px, 1vw, 15px);
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .move p em { color: var(--navy); font-style: italic; }
+
+  /* Sales accent (different border) */
+  .moves-grid.sales-grid .move { border-left-color: var(--navy); }
+  .moves-grid.sales-grid .move .num { color: var(--navy); }
+
+  /* Five-move grid (3+2) */
+  .moves-grid.five {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-top: 28px;
+  }
+
+  /* ECON */
+  .econ-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr;
+    gap: 24px;
+    align-items: baseline;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .econ-row:last-child { border-bottom: none; }
+
+  .econ-row.highlight {
+    background: var(--sky-pale);
+    margin: 8px -16px;
+    padding: 16px;
+    border-bottom: none;
+  }
+
+  .econ-row .k {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .econ-row .v {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .econ-row .n {
+    font-size: 14px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  /* CLOSING */
+  .closing-content {
+    text-align: center;
+    align-items: center;
+  }
+
+  .closing-content .closing-rule {
+    width: 60px;
+    height: 1px;
+    background: var(--sky);
+    margin: 0 auto 32px;
+  }
+
+  .closing-content h1 {
+    text-align: center;
+  }
+
+  .closing-content .lead {
+    text-align: center;
+    margin: 32px auto 0;
+    max-width: 620px;
+  }
+
+  /* NAV */
+  .nav {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(7, 23, 46, 0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 100px;
+    border: 1px solid rgba(127,164,212,0.2);
+  }
+
+  .nav button {
+    background: transparent;
+    border: none;
+    color: rgba(127,164,212,0.5);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 100px;
+    transition: all 0.2s;
+  }
+
+  .nav button:hover { color: var(--sky-light); }
+
+  .nav .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(127,164,212,0.3);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.2s;
+  }
+
+  .nav .dot.active { background: var(--sky-light); transform: scale(1.4); }
+  .nav .dot:hover { background: var(--sky); }
+
+  /* Print/PDF helper hint */
+  .hint {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: rgba(127,164,212,0.5);
+    text-transform: uppercase;
+    background: rgba(7,23,46,0.6);
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid rgba(127,164,212,0.15);
+  }
+
+  @media (max-width: 900px) {
+    .slide-inner { padding: 5vh 6vw; }
+    .moves-grid { grid-template-columns: 1fr; gap: 20px; }
+    .moves-grid.five { grid-template-columns: 1fr; }
+    .econ-row { grid-template-columns: 1fr; gap: 4px; padding: 12px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hint">← → arrows to navigate</div>
+
+<div class="deck">
+
+  <!-- SLIDE 1: HERO -->
+  <div class="slide dark active">
+    <div class="slide-inner hero-content">
+      <div class="eyebrow">Andres Cohen Sabban — Strategic Proposal — VitaKavana™</div>
+      <h1>The Family<br><em>Office of Health.</em><br>Operationalized.</h1>
+      <p class="lead">A brand and commercial strategy designed to fill the Founding Circle of thirty families — and build the system that scales beyond it. Not ten loose tactics. One sequenced architecture.</p>
+    </div>
+    <div class="slide-footer">
+      <span>Andres Cohen Sabban · VitaKavana™ · Confidential</span>
+      <span>01 / 06</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: THE PREMISE -->
+  <div class="slide light">
+    <div class="slide-inner">
+      <div class="eyebrow">The Strategic Premise</div>
+      <h2>Right idea. Right founder.<br>A <em>thirty-family runway.</em></h2>
+      <p class="lead" style="margin-top: 12px;">VitaKavana has the vision, the category, and the founder. What this plan addresses is the <strong>system underneath the brand</strong>: how prospects discover it without dilution, how conversations turn into commitments, and how Jordan's relational capital becomes a repeatable engine.</p>
+      <p class="lead" style="margin-top: 20px;"><em>The work is not more marketing. It is commercial infrastructure that operates below the waterline — invisible to members, indispensable to growth.</em></p>
+    </div>
+    <div class="slide-footer">
+      <span>The Premise</span>
+      <span>02 / 06</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: BRAND MOVES -->
+  <div class="slide light">
+    <div class="slide-inner">
+      <div class="eyebrow">Brand Strategy · 4 Moves</div>
+      <h2>Brand as <em>infrastructure.</em></h2>
+      <p class="lead">The symbolic architecture that makes a UHNW patriarch say <em>"these people understand how we think."</em></p>
+
+      <div class="moves-grid">
+        <div class="move">
+          <div class="num">B—01</div>
+          <h3>Operationalize the Category</h3>
+          <p>Add "The Architecture" + "What a Year Looks Like" pages. Define the language: anticipatory care, family protocol, health architecture. <em>Categories belong to whoever defines them.</em></p>
+        </div>
+        <div class="move">
+          <div class="num">B—02</div>
+          <h3>Case Narratives, Not Studies</h3>
+          <p>Three archetypal narratives — HIPAA-compliant, ungated by request. <em>The Founder Who Deferred His Health</em>, <em>The Multigenerational Risk</em>, <em>The Founder's Wife</em>.</p>
+        </div>
+        <div class="move">
+          <div class="num">B—03</div>
+          <h3>Disciplined Thought Leadership</h3>
+          <p>4 LinkedIn posts/month from Jordan + quarterly private newsletter (<em>"The Health Ledger"</em>) + 1 op-ed per quarter (WSJ, Barron's). Restraint is the position.</p>
+        </div>
+        <div class="move">
+          <div class="num">B—04</div>
+          <h3>Material Identity</h3>
+          <p>Welcome Kit (linen case, Mohawk paper). Bespoke proposals with the family's name on the cover. Quarterly reports delivered by courier. <em>Materiality signals seriousness.</em></p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>Brand Strategy</span>
+      <span>03 / 06</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: SALES MOVES -->
+  <div class="slide light">
+    <div class="slide-inner">
+      <div class="eyebrow">Commercial Strategy · 5 Moves</div>
+      <h2>Sales as a <em>relational system.</em></h2>
+      <p class="lead">UHNW prospects don't move through funnels. They move through <em>introductions, rituals, and waiting.</em></p>
+
+      <div class="moves-grid sales-grid five">
+        <div class="move">
+          <div class="num">S—01</div>
+          <h3>YPO Mosaic Leverage</h3>
+          <p>Jordan is already founding member + Global Impact Officer. Chapter-level Health Forums, not external speaking. <em>3-5 closes from this channel alone.</em></p>
+        </div>
+        <div class="move">
+          <div class="num">S—02</div>
+          <h3>Private Forum Series</h3>
+          <p>5 curated Forums in Y1 — Miami, NYC, Aspen, Dallas, Palm Beach. 8-10 guests, peer learning format, off-the-record. <em>1-2 families per Forum.</em></p>
+        </div>
+        <div class="move">
+          <div class="num">S—03</div>
+          <h3>MFO Alliances</h3>
+          <p>Tier-1 Multi-Family Offices. <em>No fee referrals</em> (violates fiduciary duty). The currency is status, access, and relational credit. Annual Advisor Council in Aspen.</p>
+        </div>
+        <div class="move">
+          <div class="num">S—04</div>
+          <h3>Premium Discovery Process</h3>
+          <p>"Request an Introduction" form. 45-min Discovery with Jordan. Family Health Brief delivered in 5 days. Bespoke Proposal. <em>The 7-day pause.</em></p>
+        </div>
+        <div class="move">
+          <div class="num">S—05</div>
+          <h3>UHNW Ecosystems</h3>
+          <p>Tiger 21, Milken, Aspen Ideas, R360. Speaker not sponsor. Editorial in Robb Report, Town & Country. <em>Contributors become category authorities.</em></p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>Commercial Strategy</span>
+      <span>04 / 06</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: THE INSIGHT -->
+  <div class="slide dark">
+    <div class="slide-inner">
+      <div class="eyebrow">The Central Insight</div>
+      <h1 style="font-size: clamp(36px, 4.5vw, 60px); line-height: 1.2;">VitaKavana doesn't need<br>more visibility.</h1>
+      <p class="lead" style="margin-top: 32px; max-width: 760px; font-size: clamp(20px, 1.8vw, 26px); line-height: 1.5;">It needs to <em>convert Jordan's relational capital into a replicable system</em> — preserving exclusivity while reducing single-point dependency on the founder.</p>
+      <p class="lead" style="margin-top: 36px; max-width: 720px; font-size: clamp(15px, 1.1vw, 17px);">If executed with discipline, this plan does three things: it fills the Founding Circle within twelve months; it builds the operational layer that lets VitaKavana grow past it; and it does so without competing on marketing volume — only on signal quality.</p>
+    </div>
+    <div class="slide-footer">
+      <span>The Insight</span>
+      <span>05 / 06</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: CLOSING -->
+  <div class="slide dark">
+    <div class="slide-inner closing-content">
+      <div class="closing-rule"></div>
+      <h1>The health family office<br>that <em>defines the category</em><br>or the one that follows it.</h1>
+      <p class="lead">Jordan has the relational assets. The Founding Circle is the runway. This plan converts both into a system <em>before someone else builds it first.</em></p>
+    </div>
+    <div class="slide-footer">
+      <span>Andres Cohen Sabban · Prepared for VitaKavana™ · May 2026</span>
+      <span>06 / 06</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button onclick="prev()">← Prev</button>
+  <button class="dot active" onclick="goto(0)"></button>
+  <button class="dot" onclick="goto(1)"></button>
+  <button class="dot" onclick="goto(2)"></button>
+  <button class="dot" onclick="goto(3)"></button>
+  <button class="dot" onclick="goto(4)"></button>
+  <button class="dot" onclick="goto(5)"></button>
+  <button onclick="next()">Next →</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.nav .dot');
+  let current = 0;
+
+  function goto(idx) {
+    if (idx < 0 || idx >= slides.length) return;
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = idx;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  function next() { goto(Math.min(current + 1, slides.length - 1)); }
+  function prev() { goto(Math.max(current - 1, 0)); }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    if (e.key === 'Home') { e.preventDefault(); goto(0); }
+    if (e.key === 'End') { e.preventDefault(); goto(slides.length - 1); }
+  });
+</script>
+</body>
+</html>
